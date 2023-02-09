@@ -30,6 +30,6 @@ jobs:
           host: ${{ env.FTP_HOST }}
           username: ${{ env.FTP_USERNAME }}
           password: ${{ env.FTP_PASSWORD }}
-          local_dir: .
+          server-dir: public_html/test/
           include: |
             $(cat changed-files.txt)
