@@ -31,4 +31,4 @@ jobs:
           username: ${{ env.FTP_USERNAME }}
           password: ${{ env.FTP_PASSWORD }}
           server-dir: ${{ secrets.DEPLOY_DIR }}
-          source: committed-files.txt
+          state-name: committed-files.txt
