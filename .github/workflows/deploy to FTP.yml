@@ -1,0 +1,35 @@
+name: Deploy to FTP
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  FTP_HOST: ${{ secrets.FTP_HOST }}
+  FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+  FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Get changed files
+        run: |
+          git ls-files -m | while read line; do echo $line; done > changed-files.txt
+
+      - name: Upload to FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          host: ${{ env.FTP_HOST }}
+          username: ${{ env.FTP_USERNAME }}
+          password: ${{ env.FTP_PASSWORD }}
+          local_dir: .
+          include: |
+            $(cat changed-files.txt)
