@@ -20,14 +20,15 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Get changed files
+      - name: Get committed files
         run: |
-          git ls-files -m | while read line; do echo $line; done > changed-files.txt
-
+          git diff-tree --no-commit-id --name-only -r ${{ github.head_sha }} > committed-files.txt
+          
       - name: Upload to FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
         with:
           server: ${{ env.FTP_HOST }}
           username: ${{ env.FTP_USERNAME }}
           password: ${{ env.FTP_PASSWORD }}
-          server-dir: public_html/test/
+          server-dir: ${{ secrets.DEPLOY_DIR }}
+          source: committed-files.txt
