@@ -9,25 +9,28 @@ env:
   FTP_HOST: ${{ secrets.FTP_HOST }}
   FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
   FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+  SERVER_DIR: ${{ secrets.SERVER_DIR }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
           ref: ${{ github.head_ref }}
 
-      - name: Get committed files
-        run: |
-          git diff-files --diff-filter=ACMRTUXB --name-only | sort > committed-files.txt
+    - name: Upload to FTP
+      run: |
+        set -ex
+        COMMIT_HASH=$(git rev-parse HEAD)
+        COMMIT_FILES=$(git diff-tree --no-commit-id --name-only -r $COMMIT_HASH)
 
-      - name: Upload to FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.3.3
-        with:
-          server: ${{ env.FTP_HOST }}
-          username: ${{ env.FTP_USERNAME }}
-          password: ${{ env.FTP_PASSWORD }}
-          server-dir: ${{ secrets.DEPLOY_DIR }}
+        echo "Uploading the following files:"
+        echo "$COMMIT_FILES"
+
+        # Upload each committed file to the FTP server
+        for FILE in $COMMIT_FILES; do
+          curl -T $FILE ftp://$FTP_USERNAME:$FTP_PASSWORD@$FTP_HOST/$SERVER_DIR/$FILE
+        done
