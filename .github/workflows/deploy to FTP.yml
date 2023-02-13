@@ -28,4 +28,3 @@ jobs:
         destination: ${{ env.SERVER_DIR }}
         skipUnchanged: true
         skipDirectories: .github|.well-known|configs|private-keys
-        test: true
