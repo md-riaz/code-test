@@ -25,7 +25,7 @@ jobs:
         server: ${{ env.FTP_HOST }}
         username: ${{ env.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        destination: ${{ env.DEPLOY_PATH }}
+        destination: ${{ env.SERVER_DIR }}
         skipUnchanged: true
         skipDirectories: .github|.well-known|configs|private-keys
         test: true
