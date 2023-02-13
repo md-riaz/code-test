@@ -22,7 +22,7 @@ jobs:
       run: |
         set -ex
         COMMIT_HASH=$(git rev-parse HEAD)
-        COMMIT_FILES=$(git diff-tree --no-commit-id --name-only -r $COMMIT_HASH)
+        COMMIT_FILES=$(git show $COMMIT_HASH --no-commit-id --name-only -r)
 
         echo "Uploading the following files:"
         echo "$COMMIT_FILES"
