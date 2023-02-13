@@ -11,23 +11,21 @@ env:
   FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
 
 jobs:
-  deploy:
+  web-deploy:
+    name: Deploy
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Upload to FTP
-      run: |
-        set -ex
-        COMMIT_HASH=$(git rev-parse HEAD)
-        COMMIT_FILES=$(git show $COMMIT_HASH --no-commit-id --name-only -r)
-
-        echo "Uploading the following files:"
-        echo "$COMMIT_FILES"
-
-        # Upload each committed file to the FTP server
-        for FILE in $COMMIT_FILES; do
-          curl -T $FILE ftp://$FTP_USERNAME:$FTP_PASSWORD@$FTP_HOST/$FILE
-        done
+    - name: Get files
+      uses: actions/checkout@v2.3.4
+      
+    - name: FTP Deploy
+      uses: cinderblockgames/ftp-action@v1.2.2
+      with:
+        # required
+        server: ${{ env.FTP_HOST }}
+        username: ${{ env.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        destination: ${{ env.DEPLOY_PATH }}
+        skipUnchanged: true
+        skipDirectories: .github|.well-known|configs|private-keys
+        test: true
